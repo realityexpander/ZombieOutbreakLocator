@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.plcoding.mapscomposeguide">
+    package="com.realityexpander.parkingspotlocator">
 
     <application
         android:allowBackup="true"
@@ -8,18 +8,20 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.MapsComposeGuide">
+        android:theme="@style/Theme.ParkingSpotLocator">
         <activity
-            android:name=".MainActivity"
+            android:name="com.realityexpander.parkingspotlocator.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.MapsComposeGuide">
+            android:theme="@style/Theme.ParkingSpotLocator">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyDmStrKc5e5X-NPGZV1SXKylQMTsJzNPV8" />
     </application>
 
 </manifest>
