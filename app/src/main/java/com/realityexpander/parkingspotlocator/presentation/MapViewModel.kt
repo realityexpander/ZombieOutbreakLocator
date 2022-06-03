@@ -11,7 +11,7 @@ import com.realityexpander.parkingspotlocator.domain.model.ParkingMarker
 import java.util.*
 
 class MapViewModel(
-    private val parkingMarkerRepositoryImpl: ParkingMarkerRepositoryImpl
+    private val parkingMarkerRepo: ParkingMarkerRepositoryImpl
 ) : ViewModel() {
 
     var state by mutableStateOf(MapState())
@@ -21,7 +21,14 @@ class MapViewModel(
 
     fun onEvent(event: MapEvent) {
         when (event) {
-            is MapEvent.MapLongClick -> onMapAddOrRemoveParkingLocation(event.latLng)
+            is MapEvent.MapLongClick -> {
+                try {
+                    onAddOrRemoveParkingMarker(event.latLng)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    showUserMessage("Error adding marker")
+                }
+            }
             is MapEvent.ToggleFalloutMap -> {
                 state =
                     state.copy(
@@ -40,29 +47,52 @@ class MapViewModel(
         }
     }
 
-    private fun onMapAddOrRemoveParkingLocation(parkingLocation: LatLng) {
-        var actionDone = "Added a new parking location"
+
+    // Can pass in a map LatLng or id of a parking marker or both
+    // If adding a new marker, the id will be generated and mapLatLng must be non-null
+    // If removing a marker, the id will be the id of the marker to remove
+    private fun onAddOrRemoveParkingMarker(mapLatLng: LatLng? = null, id: Long? = null) {
+        if (mapLatLng == null && id == null) return
+
+        var actionPerformed = ""
+
+        // Check if the parking location is already in the list
+        val (parkingMarkerByLocation, isMatchLocation) =
+            if (mapLatLng != null) {
+                state.parkingMarkers.firstOrNullMatchLatLng(mapLatLng)
+            } else {
+                ParkingMarkerIsMatch(null, false)
+            }
+
+        // Check if the parking location is already in the list
+        val (parkingMarkerById, isMatchId) =
+            if (id != null) {
+                state.parkingMarkers.firstOrNullMatchId(id)
+            } else {
+                ParkingMarkerIsMatch(null, false)
+            }
 
         val newParkingMarkers =
-            if (state.parkingMarkers.containsLocation(
-                    parkingLocation.latitude,
-                    parkingLocation.longitude
-                )
-            ) {
-                actionDone = "Removed a parking location"
-                state.parkingMarkers.removeLocationByLatLng(
-                    parkingLocation.latitude,
-                    parkingLocation.longitude
-                )
+            if (isMatchLocation) {
+                actionPerformed = "Removed a parking location"
+
+                state.parkingMarkers.removeMarkerByLatLng(mapLatLng)
+            } else if (isMatchId) {
+                actionPerformed = "Removed a parking location"
+
+                state.parkingMarkers.removeMarkerById(parkingMarkerById!!.id)
             } else {
+                actionPerformed = "Added a parking location"
+
                 state.parkingMarkers + ParkingMarker(
                     id = lastId++,
-                    lat = parkingLocation.latitude,
-                    lng = parkingLocation.longitude
+                    lat = mapLatLng?.latitude ?: throw IllegalArgumentException("mapLatLng is null"),
+                    lng = mapLatLng.longitude,
                 )
             }
+
         state = state.copy(parkingMarkers = newParkingMarkers)
-        showUserMessage("$actionDone:$lastId")
+        showUserMessage("$actionPerformed:$lastId")
     }
 
     private fun showUserMessage(message: String) {
@@ -78,21 +108,63 @@ class MapViewModel(
         state = state.copy(userMessages = messages)
     }
 
-    private fun List<ParkingMarker>.containsLocation(
-        latitude: Double,
-        longitude: Double
-    ): Boolean {
-        return this.any { (lat, lng) ->
-            lat == latitude && lng == longitude
+
+    private fun List<ParkingMarker>.firstOrNullMatchLatLng(
+        mapLatLng: LatLng?
+    ): ParkingMarkerIsMatch {
+        if(mapLatLng == null) {
+            return ParkingMarkerIsMatch(null, false)
+        }
+
+        val parkingMarker = firstOrNull {
+            it.lat == mapLatLng.latitude && it.lng == mapLatLng.longitude
+        }
+
+        return if (parkingMarker != null) {
+            ParkingMarkerIsMatch(parkingMarker, true)
+        } else {
+            ParkingMarkerIsMatch(null, false)
         }
     }
 
-    private fun List<ParkingMarker>.removeLocationByLatLng(
-        removeLatitude: Double,
-        removeLongitude: Double
-    ): List<ParkingMarker> {
-        return this.filter { (lat, lng) ->
-            lat == removeLatitude && lng == removeLongitude
+    private fun List<ParkingMarker>.firstOrNullMatchId(id: Long?): ParkingMarkerIsMatch {
+        if(id == null) {
+            return ParkingMarkerIsMatch(null, false)
+        }
+
+        val parkingMarker = firstOrNull {
+            it.id == id
+        }
+
+        return if (parkingMarker != null) {
+            ParkingMarkerIsMatch(parkingMarker, true)
+        } else {
+            ParkingMarkerIsMatch(null, false)
         }
     }
+
+    private fun List<ParkingMarker>.removeMarkerByLatLng(
+        removeLatLng: LatLng?
+    ): List<ParkingMarker> {
+        if (removeLatLng == null) return this
+
+        return this.filter { (lat, lng) ->
+            (lat == removeLatLng.latitude) && (lng == removeLatLng.longitude)
+        }
+    }
+
+    private fun List<ParkingMarker>.removeMarkerById(id: Long): List<ParkingMarker> {
+        return this.filterNot { it.id == id }
+    }
+
+
+    data class ParkingMarkerIsMatch(
+        val parkingMarker: ParkingMarker?,
+        val isMatch: Boolean
+    )
+
+    private infix fun ParkingMarker?.to(isMatch: Boolean) =
+        ParkingMarkerIsMatch(this, isMatch)
+
+
 }
