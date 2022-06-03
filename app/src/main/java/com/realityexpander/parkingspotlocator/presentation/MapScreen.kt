@@ -1,6 +1,5 @@
 package com.realityexpander.parkingspotlocator.presentation
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -17,7 +16,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel // not the same as Android
 
 @Composable
 fun MapScreen(
-    viewModel: MapViewModel = viewModel(),
+    viewModel: MapViewModel = viewModel(), // must use compose.viewModel!
 ) {
     val scaffoldState = rememberScaffoldState()
     val uiSettings = remember { MapUiSettings( zoomControlsEnabled = false) }
@@ -31,7 +30,7 @@ fun MapScreen(
         LaunchedEffect(userMessage.id) {
             snackbarHostState.showSnackbar(userMessage.message, duration = SnackbarDuration.Short)
             // Once the message is displayed and dismissed, notify the ViewModel.
-            viewModel.onEvent(MapEvent.ClearUserMessage(userMessage.id))
+            viewModel.onEvent(MapEvent.HideUserMessage(userMessage.id))
         }
     }
 

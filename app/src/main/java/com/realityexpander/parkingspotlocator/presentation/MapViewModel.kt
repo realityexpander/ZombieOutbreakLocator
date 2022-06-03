@@ -30,8 +30,8 @@ class MapViewModel : ViewModel() {
                         isFalloutMapVisible = !state.isFalloutMapVisible,
                     )
             }
-            is MapEvent.ClearUserMessage -> {
-                userMessageShown(event.userMessageId)
+            is MapEvent.HideUserMessage -> {
+                hideUserMessage(event.userMessageId)
             }
         }
     }
@@ -58,7 +58,7 @@ class MapViewModel : ViewModel() {
                 )
             }
         state = state.copy(parkingMarkers = newParkingMarkers)
-        showUserMessage(actionDone)
+        showUserMessage("$actionDone:$lastId")
     }
 
     private fun showUserMessage(message: String) {
@@ -69,7 +69,7 @@ class MapViewModel : ViewModel() {
         state = state.copy(userMessages = messages)
     }
 
-    private fun userMessageShown(messageId: Long) {
+    private fun hideUserMessage(messageId: Long) {
         val messages = state.userMessages.filterNot { it.id == messageId }
         state = state.copy(userMessages = messages)
     }
