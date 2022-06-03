@@ -48,15 +48,15 @@ class MapViewModel(
     }
 
 
-    // Can pass in a map LatLng or id of a parking marker or both
-    // If adding a new marker, the id will be generated and mapLatLng must be non-null
-    // If removing a marker, the id will be the id of the marker to remove
+    // Can pass in a map LatLng or id of a parking marker or both.
+    // If adding a new marker, the id will be generated and mapLatLng must be non-null.
+    // If removing a marker, the id will be the id of the marker to remove.
     private fun onAddOrRemoveParkingMarker(mapLatLng: LatLng? = null, id: Long? = null) {
         if (mapLatLng == null && id == null) return
 
         var actionPerformed = ""
 
-        // Check if the parking location is already in the list
+        // Check if the marker location is already in the list
         val (parkingMarkerByLocation, isMatchLocation) =
             if (mapLatLng != null) {
                 state.parkingMarkers.firstOrNullMatchLatLng(mapLatLng)
@@ -64,7 +64,7 @@ class MapViewModel(
                 ParkingMarkerIsMatch(null, false)
             }
 
-        // Check if the parking location is already in the list
+        // Check if the marker id is already in the list
         val (parkingMarkerById, isMatchId) =
             if (id != null) {
                 state.parkingMarkers.firstOrNullMatchId(id)
@@ -72,6 +72,7 @@ class MapViewModel(
                 ParkingMarkerIsMatch(null, false)
             }
 
+        // Add or remove the marker
         val newParkingMarkers =
             if (isMatchLocation) {
                 actionPerformed = "Removed a parking location"
@@ -143,9 +144,7 @@ class MapViewModel(
         }
     }
 
-    private fun List<ParkingMarker>.removeMarkerByLatLng(
-        removeLatLng: LatLng?
-    ): List<ParkingMarker> {
+    private fun List<ParkingMarker>.removeMarkerByLatLng(removeLatLng: LatLng?): List<ParkingMarker> {
         if (removeLatLng == null) return this
 
         return this.filter { (lat, lng) ->
