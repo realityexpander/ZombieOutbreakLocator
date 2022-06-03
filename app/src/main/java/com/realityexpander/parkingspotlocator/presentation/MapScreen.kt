@@ -21,7 +21,7 @@ fun MapScreen(
     val scaffoldState = rememberScaffoldState()
     val uiSettings = remember { MapUiSettings( zoomControlsEnabled = false) }
     val snackbarHostState = remember { SnackbarHostState() }
-    val localContext = LocalContext.current
+    val localContext = LocalContext.current // for Toast
 
     // If there are user messages to show on the screen,
     // show the first one and notify the ViewModel.

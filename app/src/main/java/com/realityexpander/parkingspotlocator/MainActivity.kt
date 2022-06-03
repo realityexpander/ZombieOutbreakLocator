@@ -11,6 +11,8 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.realityexpander.parkingspotlocator.data.ParkingMarkerRepositoryImpl
+import com.realityexpander.parkingspotlocator.domain.repository.ParkingMarkerRepository
 import com.realityexpander.parkingspotlocator.presentation.MapScreen
 import com.realityexpander.parkingspotlocator.ui.theme.MapsComposeGuideTheme
 
@@ -23,8 +25,6 @@ import com.realityexpander.parkingspotlocator.ui.theme.MapsComposeGuideTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val snackbarHostState = SnackbarHostState()
 
         setContent {
             MapsComposeGuideTheme {

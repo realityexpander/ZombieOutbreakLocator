@@ -6,9 +6,13 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
+import com.realityexpander.parkingspotlocator.data.ParkingMarkerRepositoryImpl
+import com.realityexpander.parkingspotlocator.domain.model.ParkingMarker
 import java.util.*
 
-class MapViewModel : ViewModel() {
+class MapViewModel(
+    private val parkingMarkerRepositoryImpl: ParkingMarkerRepositoryImpl
+) : ViewModel() {
 
     var state by mutableStateOf(MapState())
         private set

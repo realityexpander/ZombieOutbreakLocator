@@ -1,4 +1,4 @@
-package com.realityexpander.parkingspotlocator.presentation
+package com.realityexpander.parkingspotlocator.domain.model
 
 class ParkingMarker (
     val id: Long = 0,

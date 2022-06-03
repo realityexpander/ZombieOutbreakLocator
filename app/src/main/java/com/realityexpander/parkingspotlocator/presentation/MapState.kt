@@ -1,8 +1,7 @@
 package com.realityexpander.parkingspotlocator.presentation
 
-import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.MapProperties
-import java.util.*
+import com.realityexpander.parkingspotlocator.domain.model.ParkingMarker
 
 data class MapState(
     val mapProperties: MapProperties = MapProperties(),
