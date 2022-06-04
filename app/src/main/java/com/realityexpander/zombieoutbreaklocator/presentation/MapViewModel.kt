@@ -43,7 +43,7 @@ class MapViewModel @Inject constructor(
                 state = state.copy(
                     zombieMarkers = markers,
                     mapProperties = MapProperties(
-                        mapStyleOptions = MapStyleOptions(MapStyle.json)
+                        mapStyleOptions = MapStyleOptions(MapStyleBlue.json)
                     )
                 )
             }
@@ -68,7 +68,7 @@ class MapViewModel @Inject constructor(
                             mapStyleOptions = if (state.isFalloutMapVisible) {
                                 null  // deactivate the custom map style
                             } else
-                                MapStyleOptions(MapStyle.json) // activate the custom map style
+                                MapStyleOptions(MapStyleBlue.json) // activate the custom map style
                         ),
                         isFalloutMapVisible = !state.isFalloutMapVisible,
                     )
