@@ -7,6 +7,10 @@ plugins {
     id 'kotlinx-serialization'
 }
 
+// Locate secrets
+def localProperties = new Properties()
+localProperties.load(new FileInputStream(file("../local.properties")))
+
 android {
     compileSdk 32
 
@@ -21,7 +25,10 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+
+        buildConfigField "String", "BUILD_TYPE", "${localProperties["buildType"]}"
     }
+
 
     buildTypes {
         release {
