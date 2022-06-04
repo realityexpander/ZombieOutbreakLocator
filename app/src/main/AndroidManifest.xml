@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-        package="com.realityexpander.parkingspotlocator">
+        package="com.realityexpander.zombieoutbreaklocator">
 
 
     <!-- android:name is for dagger/hilt application class marker -->
     <application
-            android:name=".ParkingMarkerApplication"
+            android:name="com.realityexpander.zombieoutbreaklocator.ZombieMarkerApplication"
             android:allowBackup="true"
             android:icon="@mipmap/ic_launcher"
             android:label="@string/app_name"
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
-            android:theme="@style/Theme.ParkingSpotLocator">
+            android:theme="@style/Theme.ZombieOutbreakLocator">
         <activity
-                android:name="com.realityexpander.parkingspotlocator.MainActivity"
+                android:name="com.realityexpander.zombieoutbreaklocator.MainActivity"
                 android:exported="true"
                 android:label="@string/app_name"
-                android:theme="@style/Theme.ParkingSpotLocator">
+                android:theme="@style/Theme.ZombieOutbreakLocator">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -26,7 +26,9 @@
 
         <meta-data
                 android:name="com.google.android.geo.API_KEY"
-                android:value="AIzaSyDmStrKc5e5X-NPGZV1SXKylQMTsJzNPV8" />
+                android:value="AIzaSyCfBxP3Ba7CfpuKX6bz62pJYFhhLgD45Vk" />
+
+<!--                android:value="AIzaSyDmStrKc5e5X-NPGZV1SXKylQMTsJzNPV8" old one />-->
     </application>
 
 </manifest>
