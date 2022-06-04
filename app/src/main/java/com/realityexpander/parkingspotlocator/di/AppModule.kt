@@ -21,7 +21,9 @@ object AppModule {
             app,
             ParkingMarkerDatabase::class.java,
             "parking_marker_db.db"
-        ).build()
+        )
+            .fallbackToDestructiveMigration()
+            .build()
     }
 
     @Singleton

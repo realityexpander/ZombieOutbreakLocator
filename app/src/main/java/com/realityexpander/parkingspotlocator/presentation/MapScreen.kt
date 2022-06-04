@@ -29,7 +29,7 @@ fun MapScreen(
     viewModel: MapViewModel = viewModel(), // must use compose.viewModel!
 ) {
 //    val scaffoldState = rememberScaffoldState()
-    val uiSettings = remember { MapUiSettings( zoomControlsEnabled = false) }
+    val uiSettings = remember { MapUiSettings(zoomControlsEnabled = false) }
     val snackbarHostState = remember { SnackbarHostState() }
     val localContext = LocalContext.current // for Toast
 
@@ -64,7 +64,8 @@ fun MapScreen(
         }
     ) {
         Column() {
-            Text("Long tap marks a zombie outbreak 🧟‍ ☣️",
+            Text(
+                "Long tap marks a zombie outbreak 🧟‍ ☣️",
                 style = MaterialTheme.typography.h6
             )
 
@@ -80,12 +81,16 @@ fun MapScreen(
                 viewModel.state.parkingMarkers.forEach { marker ->
                     Marker(
                         position = LatLng(marker.lat ?: 0.0, marker.lng ?: 0.0),
-                        title = "Parking spot (${marker.lat}, ${marker.lng})",
-                        snippet = "Long click to delete",
+                        title = "Zombie outbreak " +
+                                "id:${marker.id} " +
+                                "(${marker.lat.toString().dropLast(11)}, " +
+                                "${marker.lng.toString().dropLast(11)})",
+                        snippet = "Long tap to delete",
                         onInfoWindowLongClick = {
-//                            viewModel.onEvent(
-//                                MapEvent.OnInfoWindowLongClick(marker)
-//                            )
+                            it.hideInfoWindow()
+                            viewModel.onEvent(
+                                MapEvent.OnInfoWindowLongClick(marker.id)
+                            )
                         },
                         onClick = {
                             it.showInfoWindow()

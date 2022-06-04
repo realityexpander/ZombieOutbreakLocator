@@ -19,6 +19,10 @@ class ParkingMarkerRepositoryImpl(
         parkingMarkerDao.deleteParkingMarker(parkingMarker.toParkingMarkerEntity())
     }
 
+    override suspend fun deleteParkingMarkerById(parkingMarkerId: Long) {
+        parkingMarkerDao.deleteParkingMarkerById(parkingMarkerId)
+    }
+
     override suspend fun getParkingMarkers(): Flow<List<ParkingMarker>> {
         return parkingMarkerDao.getAllParkingMarkers().map { markers ->
             markers.map { parkingMarkerEntity ->

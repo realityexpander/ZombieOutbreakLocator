@@ -13,6 +13,9 @@ interface ParkingMarkerDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertParkingMarker(parkingMarker: ParkingMarkerEntity)
 
+    @Query("DELETE FROM parking_marker_entity WHERE id = :parkingMarkerId")
+    suspend fun deleteParkingMarkerById(parkingMarkerId: Long)
+
     @Delete
     suspend fun deleteParkingMarker(parkingMarker: ParkingMarkerEntity)
 

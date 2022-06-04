@@ -6,5 +6,6 @@ import kotlinx.coroutines.flow.Flow
 interface ParkingMarkerRepository {
     suspend fun insertParkingMarker(parkingMarker: ParkingMarker)
     suspend fun deleteParkingMarker(parkingMarker: ParkingMarker)
+    suspend fun deleteParkingMarkerById(parkingMarkerId: Long)
     suspend fun getParkingMarkers(): Flow<List<ParkingMarker>>
 }
