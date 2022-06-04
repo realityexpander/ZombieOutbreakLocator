@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.MapProperties
+import com.realityexpander.zombieoutbreaklocator.BuildConfig
 import com.realityexpander.zombieoutbreaklocator.api.googlemaps.geocode.GoogleMapsGeocode
 import com.realityexpander.zombieoutbreaklocator.domain.model.ZombieMarker
 import com.realityexpander.zombieoutbreaklocator.domain.repository.ZombieMarkerRepository
@@ -95,8 +96,7 @@ class MapViewModel @Inject constructor(
                 val response =
                     URL("https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
                                 "${mapLatLng.latitude}" +
-//                                ",${mapLatLng.longitude}&key=AIzaSyCfBxP3Ba7CfpuKX6bz62pJYFhhLgD45Vk"
-                                ",${mapLatLng.longitude}&key=AIzaSyDmStrKc5e5X-NPGZV1SXKylQMTsJzNPV8"
+                                ",${mapLatLng.longitude}&key=${BuildConfig.GOOGLEMAPS_API_KEY}"
 
                     ).readText()
                 println(response)
@@ -110,6 +110,8 @@ class MapViewModel @Inject constructor(
                     it.types.contains("administrative_area_level_1")
                 }?.longName ?: result.results[0].addressComponents.find {
                     it.types.contains("sublocality")
+                }?.longName ?: result.results[0].addressComponents.find {
+                    it.types.contains("administrative_area_level_3")
                 }?.longName ?: result.results[1].addressComponents.find {
                     it.types.contains("locality")
                 }?.longName ?: result.results[1].addressComponents.find {

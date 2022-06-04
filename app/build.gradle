@@ -7,9 +7,9 @@ plugins {
     id 'kotlinx-serialization'
 }
 
-// Locate secrets
+// Local secrets (from your secrets password app - ZombieOutbreakLocator)
 def localProperties = new Properties()
-localProperties.load(new FileInputStream(file("../local.properties")))
+localProperties.load(new FileInputStream(file("local.properties")))
 
 android {
     compileSdk 32
@@ -26,7 +26,8 @@ android {
             useSupportLibrary true
         }
 
-        buildConfigField "String", "BUILD_TYPE", "${localProperties["buildType"]}"
+        // from local.properties -> generates BuildConfig.java
+        buildConfigField "String", "GOOGLEMAPS_API_KEY", "${localProperties["GOOGLEMAPS_API_KEY"]}"
     }
 
 
