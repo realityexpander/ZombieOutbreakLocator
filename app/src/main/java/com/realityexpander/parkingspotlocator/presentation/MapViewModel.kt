@@ -4,14 +4,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
-import com.realityexpander.parkingspotlocator.data.ParkingMarkerRepositoryImpl
+import com.google.maps.android.compose.MapProperties
 import com.realityexpander.parkingspotlocator.domain.model.ParkingMarker
+import com.realityexpander.parkingspotlocator.domain.repository.ParkingMarkerRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import java.util.*
+import javax.inject.Inject
 
-class MapViewModel(
-    private val parkingMarkerRepo: ParkingMarkerRepositoryImpl
+@HiltViewModel
+class MapViewModel @Inject constructor(
+    private val parkingMarkerRepo: ParkingMarkerRepository
 ) : ViewModel() {
 
     var state by mutableStateOf(MapState())
@@ -19,17 +26,31 @@ class MapViewModel(
 
     var lastId: Long = 0
 
+    init {
+        viewModelScope.launch {
+            parkingMarkerRepo.getParkingMarkers().collectLatest { markers ->
+                state = state.copy(
+                    parkingMarkers = markers,
+                    mapProperties = MapProperties(
+                        mapStyleOptions = MapStyleOptions(MapStyle.json)
+                    )
+                )
+            }
+        }
+
+    }
+
     fun onEvent(event: MapEvent) {
         when (event) {
-            is MapEvent.MapLongClick -> {
+            is MapEvent.OnMapLongClick -> {
                 try {
                     onAddOrRemoveParkingMarker(event.latLng)
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    showUserMessage("Error adding marker")
+                    addUserMessage("Error adding marker")
                 }
             }
-            is MapEvent.ToggleFalloutMap -> {
+            is MapEvent.OnToggleFalloutMap -> {
                 state =
                     state.copy(
                         mapProperties = state.mapProperties.copy(
@@ -41,12 +62,11 @@ class MapViewModel(
                         isFalloutMapVisible = !state.isFalloutMapVisible,
                     )
             }
-            is MapEvent.HideUserMessage -> {
-                hideUserMessage(event.userMessageId)
+            is MapEvent.OnRemoveUserMessage -> {
+                removeUserMessage(event.userMessageId)
             }
         }
     }
-
 
     // Can pass in a map LatLng or id of a parking marker or both.
     // If adding a new marker, the id will be generated and mapLatLng must be non-null.
@@ -75,28 +95,29 @@ class MapViewModel(
         // Add or remove the marker
         val newParkingMarkers =
             if (isMatchLocation) {
-                actionPerformed = "Removed a parking location"
+                actionPerformed = "Removed a zombie location"
 
                 state.parkingMarkers.removeMarkerByLatLng(mapLatLng)
             } else if (isMatchId) {
-                actionPerformed = "Removed a parking location"
+                actionPerformed = "Removed a zombie location"
 
                 state.parkingMarkers.removeMarkerById(parkingMarkerById!!.id)
             } else {
-                actionPerformed = "Added a parking location"
+                actionPerformed = "Added a zombie location"
+                lastId++
 
                 state.parkingMarkers + ParkingMarker(
-                    id = lastId++,
+                    id = lastId,
                     lat = mapLatLng?.latitude ?: throw IllegalArgumentException("mapLatLng is null"),
                     lng = mapLatLng.longitude,
                 )
             }
 
         state = state.copy(parkingMarkers = newParkingMarkers)
-        showUserMessage("$actionPerformed:$lastId")
+        addUserMessage("$actionPerformed: $lastId")
     }
 
-    private fun showUserMessage(message: String) {
+    private fun addUserMessage(message: String) {
         val messages = state.userMessages + UserMessage(
             id = UUID.randomUUID().mostSignificantBits,
             message = message
@@ -104,7 +125,7 @@ class MapViewModel(
         state = state.copy(userMessages = messages)
     }
 
-    private fun hideUserMessage(messageId: Long) {
+    private fun removeUserMessage(messageId: Long) {
         val messages = state.userMessages.filterNot { it.id == messageId }
         state = state.copy(userMessages = messages)
     }

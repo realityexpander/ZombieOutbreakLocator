@@ -6,7 +6,7 @@ import com.realityexpander.parkingspotlocator.domain.model.ParkingMarker
 data class MapState(
     val mapProperties: MapProperties = MapProperties(),
     val parkingMarkers: List<ParkingMarker> = emptyList(),
-    val isFalloutMapVisible: Boolean = false,
+    val isFalloutMapVisible: Boolean = true,
     val userMessages: List<UserMessage> = emptyList(),
 )
 
