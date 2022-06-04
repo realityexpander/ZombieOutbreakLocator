@@ -26,7 +26,7 @@ android {
             useSupportLibrary true
         }
 
-        // from local.properties -> generates BuildConfig.java
+        // from file 'local.properties' -> generates 'BuildConfig.java'
         buildConfigField "String", "GOOGLEMAPS_API_KEY", "${localProperties["GOOGLEMAPS_API_KEY"]}"
     }
 

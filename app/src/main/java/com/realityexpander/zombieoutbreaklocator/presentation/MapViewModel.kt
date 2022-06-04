@@ -59,18 +59,18 @@ class MapViewModel @Inject constructor(
                     addZombieMarker(event.latLng)
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    addUserMessage("Error adding marker")
+                    addUserMessage("Error adding marker: ${e.localizedMessage}")
                 }
             }
             is MapEvent.OnToggleFalloutMap -> {
-                state =
-                    state.copy(
-                        mapProperties = state.mapProperties.copy(
-                            mapStyleOptions = if (state.isFalloutMapVisible) {
-                                null  // deactivate the custom map style
-                            } else
-                                MapStyleOptions(MapStyleBlue.json) // activate the custom map style
-                        ),
+                state = state.copy(
+                        mapProperties = if (state.isFalloutMapVisible) {
+                            MapProperties() // No map style
+                        } else {
+                            state.mapProperties.copy(
+                                mapStyleOptions = MapStyleOptions(MapStyleBlue.json) // activate the custom map style
+                            )
+                        },
                         isFalloutMapVisible = !state.isFalloutMapVisible,
                     )
             }
@@ -78,7 +78,7 @@ class MapViewModel @Inject constructor(
                 removeUserMessage(event.userMessageId)
             }
             is MapEvent.OnInfoWindowLongClick -> {
-                onRemoveZombieMarker(id = event.zombieMarkerId)
+                onRemoveZombieMarker(removeMarkerId = event.zombieMarkerId)
             }
         }
     }
@@ -92,6 +92,7 @@ class MapViewModel @Inject constructor(
         viewModelScope.launch {
             zombieMarkerRepo.insertZombieMarker(zombieMarker)
 
+            // Get the address of the new marker
             withContext(Dispatchers.IO) {
                 val response =
                     URL("https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
@@ -101,9 +102,11 @@ class MapViewModel @Inject constructor(
                     ).readText()
                 println(response)
 
+                // Get the address from the response
                 val result = jsonLenientIgnoreUnknown
                     .decodeFromString<GoogleMapsGeocode>(response)
 
+                // Find a valid city name
                 val city = result.results[0].addressComponents.find {
                     it.types.contains("locality")
                 }?.longName ?: result.results[0].addressComponents.find {
@@ -118,6 +121,7 @@ class MapViewModel @Inject constructor(
                     it.types.contains("administrative_area_level_1")
                 }?.longName ?: "Unknown"
 
+                // Find a valid country name
                 val country = result.results[0].addressComponents.find {
                     it.types.contains("country")
                 }?.longName ?: result.results[1].addressComponents.find {
@@ -130,15 +134,14 @@ class MapViewModel @Inject constructor(
         }
     }
 
-    // Can pass in a map LatLng or id of a marker or both.
-    // If removing a marker, the id will be the id of the marker to remove.
-    private fun onRemoveZombieMarker(mapLatLng: LatLng? = null, id: Long? = null) {
-        if (mapLatLng == null && id == null) return
+    // Can pass in a map LatLng or marker id of a marker or both.
+    private fun onRemoveZombieMarker(removeLatLng: LatLng? = null, removeMarkerId: Long? = null) {
+        if (removeLatLng == null && removeMarkerId == null) return
 
-        // Check if the marker location or id is already in the list
+        // Check if the marker is in the list
         val markerToRemove: ZombieMarker? =
-            state.zombieMarkers.firstOrNullMatchLatLng(mapLatLng)
-                ?: state.zombieMarkers.firstOrNullMatchId(id)
+            state.zombieMarkers.firstOrNullMatchLatLng(removeLatLng)
+                ?: state.zombieMarkers.firstOrNullMatchId(removeMarkerId)
 
         markerToRemove?.let {
             viewModelScope.launch {
