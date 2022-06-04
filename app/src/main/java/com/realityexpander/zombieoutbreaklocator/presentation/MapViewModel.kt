@@ -93,10 +93,11 @@ class MapViewModel @Inject constructor(
 
             withContext(Dispatchers.IO) {
                 val response =
-                    URL(
-                        "https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
+                    URL("https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
                                 "${mapLatLng.latitude}" +
-                                ",${mapLatLng.longitude}&key=AIzaSyCfBxP3Ba7CfpuKX6bz62pJYFhhLgD45Vk"
+//                                ",${mapLatLng.longitude}&key=AIzaSyCfBxP3Ba7CfpuKX6bz62pJYFhhLgD45Vk"
+                                ",${mapLatLng.longitude}&key=AIzaSyDmStrKc5e5X-NPGZV1SXKylQMTsJzNPV8"
+
                     ).readText()
                 println(response)
 
@@ -109,9 +110,15 @@ class MapViewModel @Inject constructor(
                     it.types.contains("administrative_area_level_1")
                 }?.longName ?: result.results[0].addressComponents.find {
                     it.types.contains("sublocality")
+                }?.longName ?: result.results[1].addressComponents.find {
+                    it.types.contains("locality")
+                }?.longName ?: result.results[1].addressComponents.find {
+                    it.types.contains("administrative_area_level_1")
                 }?.longName ?: "Unknown"
 
                 val country = result.results[0].addressComponents.find {
+                    it.types.contains("country")
+                }?.longName ?: result.results[1].addressComponents.find {
                     it.types.contains("country")
                 }?.longName ?: "Unknown"
 
