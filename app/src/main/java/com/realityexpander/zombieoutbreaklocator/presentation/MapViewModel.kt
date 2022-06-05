@@ -36,8 +36,6 @@ class MapViewModel @Inject constructor(
     var state by mutableStateOf(MapState())
         private set
 
-    var lastId: Long = 0
-
     init {
         viewModelScope.launch {
             zombieMarkerRepo.getZombieMarkers().collectLatest { markers ->
