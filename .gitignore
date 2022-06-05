@@ -12,7 +12,7 @@
 /captures
 .externalNativeBuild
 .cxx
-app/local.properties
+
 ### Android template
 # Built application files
 #*.apk
