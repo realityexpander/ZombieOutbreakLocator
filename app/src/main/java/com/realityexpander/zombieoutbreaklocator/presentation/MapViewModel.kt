@@ -23,11 +23,6 @@ import java.net.URL
 import java.util.*
 import javax.inject.Inject
 
-private val jsonLenientIgnoreUnknown = Json {
-    isLenient = true
-    ignoreUnknownKeys = true
-}
-
 @HiltViewModel
 class MapViewModel @Inject constructor(
     private val zombieMarkerRepo: ZombieMarkerRepository
@@ -60,7 +55,7 @@ class MapViewModel @Inject constructor(
                     addUserMessage("Error adding marker: ${e.localizedMessage}")
                 }
             }
-            is MapEvent.OnToggleFalloutMap -> {
+            is MapEvent.OnToggleMapStyle -> {
                 state = state.copy(
                     mapProperties = if (state.isFalloutMapVisible) {
                         MapProperties() // No map style
@@ -146,10 +141,15 @@ class MapViewModel @Inject constructor(
 
 }
 
+private val jsonDecodeLenientIgnoreUnknown = Json {
+    isLenient = true
+    ignoreUnknownKeys = true
+}
+
 private suspend fun MapViewModel.getCityCountryFromLatLng(
     mapLatLng: LatLng
 ): Pair<String, String> {
-    val (city, country) = withContext(Dispatchers.IO) {
+    return withContext(Dispatchers.IO) {
         val response =
             URL(
                 "https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
@@ -160,7 +160,7 @@ private suspend fun MapViewModel.getCityCountryFromLatLng(
         println(response)
 
         // Get the address from the response
-        val result = jsonLenientIgnoreUnknown
+        val result = jsonDecodeLenientIgnoreUnknown
             .decodeFromString<GoogleMapsGeocode>(response)
 
         // Find a valid city name
@@ -185,9 +185,6 @@ private suspend fun MapViewModel.getCityCountryFromLatLng(
             it.types.contains("country")
         }?.longName ?: "Unknown"
 
-        return@withContext city to country
+        city to country
     }
-
-    return city to country
-
 }

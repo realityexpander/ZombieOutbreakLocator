@@ -49,7 +49,7 @@ fun MapScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    viewModel.onEvent(MapEvent.OnToggleFalloutMap)
+                    viewModel.onEvent(MapEvent.OnToggleMapStyle)
                 }
             ) {
                 Icon(
