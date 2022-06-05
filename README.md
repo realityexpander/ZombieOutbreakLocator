@@ -1,5 +1,5 @@
-# ZombieOutbreakLocator
-ZombieOutbreakLocator app using MVVM, Compose, Google Maps Composable, Custom Maps, Custom Icons, Room, Flow, Coroutines, GeoCode API
+# Zombie Outbreak Locator
+Zombie Outbreak Locator app using MVVM, Compose, Google Maps Composable, Custom Maps, Custom Icons, Room, Flow, Coroutines, GeoCode API
 
 [<img src="https://user-images.githubusercontent.com/5157474/172029910-e6c7fc81-7bf6-48e3-954c-4dc7ed8ef5cf.png" width="325"/>](https://user-images.githubusercontent.com/5157474/172029910-e6c7fc81-7bf6-48e3-954c-4dc7ed8ef5cf.png)
 [<img src="https://user-images.githubusercontent.com/5157474/172029917-787daa35-8fc8-41da-a811-6db635fe36df.png" width="325"/>](https://user-images.githubusercontent.com/5157474/172029917-787daa35-8fc8-41da-a811-6db635fe36df.png)
