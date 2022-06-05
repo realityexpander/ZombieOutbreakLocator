@@ -64,15 +64,15 @@ class MapViewModel @Inject constructor(
             }
             is MapEvent.OnToggleFalloutMap -> {
                 state = state.copy(
-                        mapProperties = if (state.isFalloutMapVisible) {
-                            MapProperties() // No map style
-                        } else {
-                            state.mapProperties.copy(
-                                mapStyleOptions = MapStyleOptions(MapStyleBlue.json) // activate the custom map style
-                            )
-                        },
-                        isFalloutMapVisible = !state.isFalloutMapVisible,
-                    )
+                    mapProperties = if (state.isFalloutMapVisible) {
+                        MapProperties() // No map style
+                    } else {
+                        state.mapProperties.copy(
+                            mapStyleOptions = MapStyleOptions(MapStyleBlue.json) // activate the custom map style
+                        )
+                    },
+                    isFalloutMapVisible = !state.isFalloutMapVisible,
+                )
             }
             is MapEvent.OnRemoveUserMessage -> {
                 removeUserMessage(event.userMessageId)
@@ -93,44 +93,8 @@ class MapViewModel @Inject constructor(
             zombieMarkerRepo.insertZombieMarker(zombieMarker)
 
             // Get the address of the new marker
-            withContext(Dispatchers.IO) {
-                val response =
-                    URL("https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
-                                "${mapLatLng.latitude}" +
-                                ",${mapLatLng.longitude}&key=${BuildConfig.GOOGLEMAPS_API_KEY}"
-
-                    ).readText()
-                println(response)
-
-                // Get the address from the response
-                val result = jsonLenientIgnoreUnknown
-                    .decodeFromString<GoogleMapsGeocode>(response)
-
-                // Find a valid city name
-                val city = result.results[0].addressComponents.find {
-                    it.types.contains("locality")
-                }?.longName ?: result.results[0].addressComponents.find {
-                    it.types.contains("administrative_area_level_1")
-                }?.longName ?: result.results[0].addressComponents.find {
-                    it.types.contains("sublocality")
-                }?.longName ?: result.results[0].addressComponents.find {
-                    it.types.contains("administrative_area_level_3")
-                }?.longName ?: result.results[1].addressComponents.find {
-                    it.types.contains("locality")
-                }?.longName ?: result.results[1].addressComponents.find {
-                    it.types.contains("administrative_area_level_1")
-                }?.longName ?: "Unknown"
-
-                // Find a valid country name
-                val country = result.results[0].addressComponents.find {
-                    it.types.contains("country")
-                }?.longName ?: result.results[1].addressComponents.find {
-                    it.types.contains("country")
-                }?.longName ?: "Unknown"
-
-                addUserMessage("Outbreak in $city, $country")
-
-            }
+            val (city, country) = getCityCountryFromLatLng(mapLatLng)
+            addUserMessage("Outbreak added: ${city}, $country")
         }
     }
 
@@ -181,5 +145,51 @@ class MapViewModel @Inject constructor(
             marker.id == id
         }
     }
+
+}
+
+private suspend fun MapViewModel.getCityCountryFromLatLng(
+    mapLatLng: LatLng
+): Pair<String, String> {
+    val (city, country) = withContext(Dispatchers.IO) {
+        val response =
+            URL(
+                "https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
+                        "${mapLatLng.latitude}" +
+                        ",${mapLatLng.longitude}&key=${BuildConfig.GOOGLEMAPS_API_KEY}"
+
+            ).readText()
+        println(response)
+
+        // Get the address from the response
+        val result = jsonLenientIgnoreUnknown
+            .decodeFromString<GoogleMapsGeocode>(response)
+
+        // Find a valid city name
+        val city = result.results[0].addressComponents.find {
+            it.types.contains("locality")
+        }?.longName ?: result.results[0].addressComponents.find {
+            it.types.contains("administrative_area_level_1")
+        }?.longName ?: result.results[0].addressComponents.find {
+            it.types.contains("sublocality")
+        }?.longName ?: result.results[0].addressComponents.find {
+            it.types.contains("administrative_area_level_3")
+        }?.longName ?: result.results[1].addressComponents.find {
+            it.types.contains("locality")
+        }?.longName ?: result.results[1].addressComponents.find {
+            it.types.contains("administrative_area_level_1")
+        }?.longName ?: "Unknown"
+
+        // Find a valid country name
+        val country = result.results[0].addressComponents.find {
+            it.types.contains("country")
+        }?.longName ?: result.results[1].addressComponents.find {
+            it.types.contains("country")
+        }?.longName ?: "Unknown"
+
+        return@withContext city to country
+    }
+
+    return city to country
 
 }

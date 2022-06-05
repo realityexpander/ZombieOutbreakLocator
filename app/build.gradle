@@ -5,11 +5,20 @@ plugins {
     id 'kotlin-parcelize'
     id 'dagger.hilt.android.plugin'
     id 'kotlinx-serialization'
+    id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 }
 
-// Local secrets (from your secrets password app - ZombieOutbreakLocator)
-def localProperties = new Properties()
-localProperties.load(new FileInputStream(file("local.properties")))
+// Local secrets for buildConfigField (from your secrets password app - ZombieOutbreakLocator)
+// Does not give access to AndroidManifest.xml
+//def localProperties = new Properties()
+//localProperties.load(new FileInputStream(file("local.properties")))
+
+// Allow use of secrets in the AndroidManifest.xml & BuildConfig.java
+// (from your secrets password app - ZombieOutbreakLocator)
+secrets {
+    propertiesFileName 'local.properties'
+    defaultPropertiesFileName = "local.properties"
+}
 
 android {
     compileSdk 32
@@ -26,8 +35,8 @@ android {
             useSupportLibrary true
         }
 
-        // from file 'local.properties' -> generates 'BuildConfig.java'
-        buildConfigField "String", "GOOGLEMAPS_API_KEY", "${localProperties["GOOGLEMAPS_API_KEY"]}"
+        // from file 'local.properties' -> generates 'BuildConfig.java', NOT accessible in AndroidManifest.xml
+        //buildConfigField "String", "GOOGLEMAPS_API_KEY", "${localProperties["GOOGLEMAPS_API_KEY"]}"
     }
 
 
