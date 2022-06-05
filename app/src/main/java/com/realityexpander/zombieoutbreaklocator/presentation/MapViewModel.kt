@@ -157,7 +157,8 @@ private suspend fun MapViewModel.getCityCountryFromLatLng(
                         ",${mapLatLng.longitude}&key=${BuildConfig.GOOGLEMAPS_API_KEY}"
 
             ).readText()
-        println(response)
+
+        //println(response) // leave for debug purposes
 
         // Get the address from the response
         val result = jsonDecodeLenientIgnoreUnknown
