@@ -33,6 +33,8 @@ class MapViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+
+            // Listen to changes in the repository
             zombieMarkerRepo.getZombieMarkers().collectLatest { markers ->
                 state = state.copy(
                     zombieMarkers = markers,
