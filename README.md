@@ -1,14 +1,16 @@
 # Zombie Outbreak Locator
+
 Zombie Outbreak Locator app using MVVM, Compose, Google Maps Composable, Custom Maps, Custom Icons, Room, Flow, Coroutines, GeoCode API
 
 [<img src="https://user-images.githubusercontent.com/5157474/172029910-e6c7fc81-7bf6-48e3-954c-4dc7ed8ef5cf.png" width="325"/>](https://user-images.githubusercontent.com/5157474/172029910-e6c7fc81-7bf6-48e3-954c-4dc7ed8ef5cf.png)
 [<img src="https://user-images.githubusercontent.com/5157474/172029917-787daa35-8fc8-41da-a811-6db635fe36df.png" width="325"/>](https://user-images.githubusercontent.com/5157474/172029917-787daa35-8fc8-41da-a811-6db635fe36df.png)
 [<img src="https://user-images.githubusercontent.com/5157474/172029922-b5f6a748-4dc7-4d82-bd3f-dab8f2dbaeef.png" width="325"/>](https://user-images.githubusercontent.com/5157474/172029922-b5f6a748-4dc7-4d82-bd3f-dab8f2dbaeef.png)
 
-- Allows users to add & delete Zombie Outbreak locations on a Google Maps
+- Allows users to add & delete Zombie Outbreak locations on Google Maps
 - User selectable custom color scheme for map
 
----- Tech used ----
+## ---- Tech used ----
+
 - List of marked zombie outbreak locations is cached locally in a `Room` database
 - Uses custom query for `Room` database
 - Shows proper use of `Dagger-Hilt` & SOLID architecture
