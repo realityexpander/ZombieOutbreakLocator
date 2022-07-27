@@ -9,8 +9,9 @@ Zombie Outbreak Locator app using MVVM, Compose, Google Maps Composable, Custom 
 - Allows users to add & delete Zombie Outbreak locations on Google Maps
 - User selectable custom color scheme for map
 
-## ---- Tech used ----
+## Tech Employed
 
+- Compose for view layer including native compose google map view
 - List of marked zombie outbreak locations is cached locally in a `Room` database
 - Uses custom query for `Room` database
 - Shows proper use of `Dagger-Hilt` & SOLID architecture
