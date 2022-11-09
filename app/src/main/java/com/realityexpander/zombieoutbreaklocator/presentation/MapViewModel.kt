@@ -23,6 +23,11 @@ import java.net.URL
 import java.util.*
 import javax.inject.Inject
 
+private val jsonDecodeLenientIgnoreUnknown = Json {
+    isLenient = true
+    ignoreUnknownKeys = true
+}
+
 @HiltViewModel
 class MapViewModel @Inject constructor(
     private val zombieMarkerRepo: ZombieMarkerRepository
@@ -141,11 +146,6 @@ class MapViewModel @Inject constructor(
         }
     }
 
-}
-
-private val jsonDecodeLenientIgnoreUnknown = Json {
-    isLenient = true
-    ignoreUnknownKeys = true
 }
 
 private suspend fun MapViewModel.getCityCountryFromLatLng(
